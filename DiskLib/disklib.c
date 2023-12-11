@@ -1,7 +1,9 @@
-// Last Edited By: Daniel Fewell 
-// Last Edited Date: 12/2/2023
-// For more in-depth documentation on the functions within this file see: IDR File System Documentation - OPSYS Final Project Document
-
+/********************************************************************************
+ * Filename:     disklib.c
+ * Author:       Daniel Fewell
+ * Last Edited:  12/11/2023
+ * Description:  Implementation of the 3 functions declared in disklib.h
+ * ********************************************************************************/
 
 #include "disklib.h"
 

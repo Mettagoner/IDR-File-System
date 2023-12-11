@@ -1,5 +1,9 @@
-// Last Edited By: Daniel Fewell
-// Last Edited Date: 12/2/2023
+/********************************************************************************
+ * Filename:     disklib.h
+ * Author:       Daniel Fewell
+ * Last Edited:  12/11/2023
+ * Description:  Header File for the 3 functions defined in disklib.c
+ * ********************************************************************************/
 
 // Include Guards (prevents multiple inclusions and redefinition errors)
 #ifndef DISKLIB_H // Has disklib_h not been defined?
