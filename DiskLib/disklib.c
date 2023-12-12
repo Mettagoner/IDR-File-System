@@ -7,6 +7,9 @@
 
 #include "disklib.h"
 #include <limits.h> // For CHAR_BIT
+#include <string.h> // For memset
+
+// ... rest of your code ...
 
 // Global variable for the disk file
 FILE *disk = NULL;
