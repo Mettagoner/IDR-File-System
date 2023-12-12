@@ -1,23 +1,11 @@
-/********************************************************************************
- * Filename: disklib.c
- * Author: Daniel Fewell
- * Last Edited: 12/11/2023
- * Description: Implementation of the 8 functions declared in disklib.h
- ********************************************************************************/
-
 #include "disklib.h"
 #include <limits.h> // For CHAR_BIT
 #include <string.h> // For memset
-
-// ... rest of your code ...
 
 // Global variable for the disk file
 FILE *disk = NULL;
 unsigned char bitmap[BITMAP_SIZE]; // Bitmap array
 
-
-
-// Initialize the virtual disk:
 void init_disk() {
     disk = fopen("virtual_disk.img", "r+b");
     if (disk == NULL) {
@@ -26,36 +14,51 @@ void init_disk() {
             perror("Error Code 1: Unable to create virtual disk");
             exit(1);
         }
-        // Initialize disk to specified size and create bitmap
-        fseek(disk, BLOCK_SIZE * NUM_BLOCKS - 1, SEEK_SET);
+        if (fseek(disk, BLOCK_SIZE * NUM_BLOCKS - 1, SEEK_SET) != 0) {
+            perror("Error setting disk size");
+            exit(1);
+        }
         fputc(0, disk);
-        memset(bitmap, 0, BITMAP_SIZE); // Initialize all blocks as free
-        save_bitmap(); // Save the initial bitmap to disk
+        memset(bitmap, 0, BITMAP_SIZE);
+        save_bitmap();
     } else {
-        init_bitmap(); // Load bitmap from disk
+        init_bitmap();
     }
 }
 
+void close_disk() {
+    if (disk != NULL) {
+        fclose(disk);
+        disk = NULL;
+    }
+}
 
-
-// Bitmap Functions
 void init_bitmap() {
-    fseek(disk, 0, SEEK_SET);// Set the file position to the beginning of the disk file
-    size_t bytesRead = fread(bitmap, sizeof(char), BITMAP_SIZE, disk); // Read the bitmap data from the disk into the bitmap array
-    if (bytesRead != BITMAP_SIZE) { // Check if the number of bytes read is equal to the expected bitmap size
-        perror("Error reading bitmap from disk"); // If not, output an error message and exit the program
+    if (fseek(disk, 0, SEEK_SET) != 0) {
+        perror("Error seeking to start of disk");
+        exit(1);
+    }
+    size_t bytesRead = fread(bitmap, sizeof(char), BITMAP_SIZE, disk);
+    if (bytesRead != BITMAP_SIZE) {
+        perror("Error reading bitmap from disk");
         exit(1);
     }
 }
 
 void save_bitmap() {
-    fseek(disk, 0, SEEK_SET);// Set the file position to the beginning of the disk file where the bitmap is stored
-    size_t bytesWritten = fwrite(bitmap, sizeof(char), BITMAP_SIZE, disk); // Write the bitmap data from the bitmap array to the disk
-    if (bytesWritten != BITMAP_SIZE) { // Check if the number of bytes written is equal to the expected bitmap size
-        perror("Error writing bitmap to disk"); // If not, output an error message and exit the program
+    if (fseek(disk, 0, SEEK_SET) != 0) {
+        perror("Error seeking to start of disk");
         exit(1);
     }
-    fflush(disk); // Flush the output buffer to ensure all data is written to the disk
+    size_t bytesWritten = fwrite(bitmap, sizeof(char), BITMAP_SIZE, disk);
+    if (bytesWritten != BITMAP_SIZE) {
+        perror("Error writing bitmap to disk");
+        exit(1);
+    }
+    if (fflush(disk) != 0) {
+        perror("Error flushing disk");
+        exit(1);
+    }
 }
 
 int find_free_block() {
@@ -83,21 +86,17 @@ void mark_block_free(int blockIndex) {
     save_bitmap(); // Save the updated bitmap to the disk
 }
 
-
-
-// Read_block, write_block functions here:
-int read_block(int block_num, void *block) { // void* block allows us to pass a pointer to a buffer of any data type
-        if (block_num < 0 || block_num >= NUM_BLOCKS) { // If conditions are met, return invalid block number
+int read_block(int block_num, void *block) {
+    if (block_num < 0 || block_num >= NUM_BLOCKS) { // If conditions are met, return invalid block number
                 return -1; // Return failure upon completion
         }
-
         fseek(disk, block_num * BLOCK_SIZE, SEEK_SET); // Position the file pointer
         fread(block, BLOCK_SIZE, 1, disk); // Use fread function to read data into the buffer (block)
         return 0; // Return success upon completion
 }
 
 int write_block(int block_num, const void *block) {
-        if (block_num < 0 || block_num >= NUM_BLOCKS) { // If conditions are met, return invalid block number
+    if (block_num < 0 || block_num >= NUM_BLOCKS) { // If conditions are met, return invalid block number
                 return -1; // Return failure upon completion
         }
 

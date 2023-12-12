@@ -1,10 +1,3 @@
-/********************************************************************************
- * Filename:     disklib.h
- * Author:       Daniel Fewell
- * Last Edited:  12/11/2023
- * Description:  Header File for the 8 functions defined in disklib.c
- * ********************************************************************************/
-
 // Include Guards (prevents multiple inclusions and redefinition errors)
 #ifndef DISKLIB_H // Has disklib_h not been defined?
 #define DISKLIB_H // If disklib_h has not been defined then define disklib.h
@@ -26,5 +19,6 @@ void save_bitmap(); // Save bitmap to the disk
 int find_free_block(); // Find the first free block using the bitmap
 void mark_block_used(int blockIndex); // Marks a block as used in the bitmap
 void mark_block_free(int blockIndex); // Marks a block as free in the bitmap
+void close_disk();
 
 #endif
